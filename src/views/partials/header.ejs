@@ -16,10 +16,11 @@
     <a href="/customers" class="<%= path.startsWith('/customers') ? 'on' : '' %>">Mijozlar</a>
     <a href="/licenses" class="<%= path.startsWith('/licenses') ? 'on' : '' %>">Kalitlar</a>
     <a href="/payments" class="<%= path.startsWith('/payments') ? 'on' : '' %>">To'lovlar</a>
+    <a href="/account" class="<%= path.startsWith('/account') ? 'on' : '' %>">🔑 Parol</a>
   </nav>
   <form method="post" action="/logout" class="logout">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
-    <a href="/account"><%= admin.username %></a>
+    <span><%= admin.username %></span>
     <button class="btn ghost small">Chiqish</button>
   </form>
 </header>

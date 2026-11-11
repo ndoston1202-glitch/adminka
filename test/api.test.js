@@ -164,6 +164,18 @@ test('admin panel: login, CSRF va mijoz qo\'shish', async () => {
   assert.equal(ext.res.status, 302);
   const licPage = await req(licPath);
   assert.ok(licPage.text.includes("To&#39;lov qabul qilindi"));
+  // Parolni almashtirish
+  const acc = await req('/account');
+  assert.ok(acc.text.includes('Parolni almashtirish'));
+  await req('/account/password', form({ _csrf: csrf2, current: 'xato', password: 'yangi-parol-1', password2: 'yangi-parol-1' }));
+  assert.ok((await req('/account')).text.includes('Joriy parol noto'));
+  await req('/account/password', form({ _csrf: csrf2, current: 'parol12345', password: 'yangi-parol-1', password2: 'boshqa-parol' }));
+  assert.ok((await req('/account')).text.includes('bir xil emas'));
+  await req('/account/password', form({ _csrf: csrf2, current: 'parol12345', password: 'yangi-parol-1', password2: 'yangi-parol-1' }));
+  assert.ok((await req('/account')).text.includes('Parol almashtirildi'));
+  const { rows: adm } = await db.query("SELECT password_hash FROM admins WHERE username = 'test'");
+  assert.ok(await bcrypt.compare('yangi-parol-1', adm[0].password_hash));
+
   for (const p of ['/licenses', '/licenses?filter=expired', '/payments', '/customers?q=Vali']) {
     assert.equal((await req(p)).res.status, 200, p);
   }
