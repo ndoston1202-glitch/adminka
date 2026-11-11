@@ -18,6 +18,20 @@
   </dl>
 </div>
 
+<div class="card">
+  <h2>Ro'yxatdan o'tish ma'lumotlari</h2>
+  <% if (!license.profile) { %>
+    <p class="muted">Mijoz hali CafePOS'da ro'yxatdan o'tish formasini to'ldirmagan.</p>
+  <% } else { %>
+    <dl class="info">
+      <% h.PROFILE_LABELS.forEach(([k, label]) => { const v = license.profile[k]; if (v !== undefined && v !== '') { %>
+        <dt><%= label %></dt><dd><%= v %></dd>
+      <% } }) %>
+      <dt>To'ldirilgan vaqt</dt><dd class="muted"><%= h.dateTime(license.profile_at) %></dd>
+    </dl>
+  <% } %>
+</div>
+
 <div class="two-col">
   <div class="card">
     <h2>💰 To'lov qabul qilish</h2>
@@ -81,6 +95,7 @@
           <% } else if (e.type === 'extended') { %>+<%= d.months %> oy · <%= h.date(d.from) %> → <%= h.date(d.to) %>
           <% } else if (e.type === 'activated') { %><%= d.deviceName || d.deviceId %><%= d.appVersion ? ' · v' + d.appVersion : '' %>
           <% } else if (e.type === 'device_reset') { %><%= d.device_name || d.device_id || '' %>
+          <% } else if (e.type === 'profile') { %><%= d.name || '' %>
           <% } else if (e.type === 'created') { %><%= h.PLANS[d.plan] %>, <%= d.months %> oy<% } %>
         </td>
         <td class="muted"><%= e.ip || '' %></td>

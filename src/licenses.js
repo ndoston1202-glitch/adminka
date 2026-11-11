@@ -184,4 +184,61 @@ async function clientCheck({ key, deviceId, deviceName, appVersion, ip, bind }) 
   });
 }
 
-module.exports = { createLicense, extendLicense, setStatus, resetDevice, clientCheck, LicenseError, PLAN_MONTHS };
+// CafePOS ro'yxatdan o'tish formasi maydonlari: [kalit, maksimal uzunlik]
+const PROFILE_FIELDS = [
+  ['name', 120], ['company', 160], ['district', 80], ['address', 250], ['telegram_phone', 30],
+  ['note', 500], ['inn', 20], ['contract_no', 60], ['director_name', 120], ['director_phone', 30],
+];
+
+function cleanProfile(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new LicenseError('bad_profile', 400, "Ma'lumotlar noto'g'ri");
+  }
+  const profile = {};
+  for (const [key, max] of PROFILE_FIELDS) {
+    const v = input[key];
+    if (v === undefined || v === null || v === '') continue;
+    if (typeof v !== 'string' && typeof v !== 'number') throw new LicenseError('bad_profile', 400, `${key} noto'g'ri`);
+    const text = String(v).trim().slice(0, max);
+    if (text) profile[key] = text;
+  }
+  if (input.vat_percent !== undefined && input.vat_percent !== null && input.vat_percent !== '') {
+    const vat = Number(input.vat_percent);
+    if (!Number.isFinite(vat) || vat < 0 || vat > 100) throw new LicenseError('bad_profile', 400, "QQS 0..100 oralig'ida bo'lishi kerak");
+    profile.vat_percent = vat;
+  }
+  if (!profile.name) throw new LicenseError('bad_profile', 400, 'Filial nomi majburiy');
+  if (!profile.director_name) throw new LicenseError('bad_profile', 400, 'Direktorning F.I.Sh. majburiy');
+  return profile;
+}
+
+/** CafePOS'dan kelgan ro'yxatdan o'tish ma'lumotlarini saqlaydi. Faqat kalit bog'langan qurilma yubora oladi. */
+async function saveProfile({ key, deviceId, profile, ip }) {
+  const licenseKey = normalizeLicenseKey(key);
+  if (!licenseKey) throw new LicenseError('invalid_key', 400, "Kalit formati noto'g'ri");
+  validateDeviceId(deviceId);
+  const clean = cleanProfile(profile);
+
+  return db.withTransaction(async (client) => {
+    const { rows } = await client.query('SELECT * FROM licenses WHERE license_key = $1 FOR UPDATE', [licenseKey]);
+    if (!rows.length) throw new LicenseError('invalid_key', 404, 'Bunday kalit mavjud emas');
+    const license = rows[0];
+    if (license.status === 'blocked') throw new LicenseError('blocked', 403, 'Kalit bloklangan');
+    if (!license.device_id || license.device_id !== deviceId) {
+      throw new LicenseError('device_mismatch', 409, 'Bu kalit shu kompyuterga bog\'lanmagan');
+    }
+    await client.query('UPDATE licenses SET profile = $2, profile_at = now() WHERE id = $1', [license.id, JSON.stringify(clean)]);
+    // Admin kiritmagan maydonlarni mijoz ma'lumotidan to'ldiramiz (admin yozganini o'zgartirmaymiz)
+    await client.query(
+      `UPDATE customers SET cafe_name = COALESCE(NULLIF(cafe_name, ''), $2),
+                            phone = COALESCE(NULLIF(phone, ''), $3),
+                            address = COALESCE(NULLIF(address, ''), $4)
+        WHERE id = $1`,
+      [license.customer_id, clean.name, clean.director_phone || null, clean.address || null],
+    );
+    await logEvent(client, license.id, 'profile', { name: clean.name }, ip);
+    return clean;
+  });
+}
+
+module.exports = { saveProfile, createLicense, extendLicense, setStatus, resetDevice, clientCheck, LicenseError, PLAN_MONTHS };

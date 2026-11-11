@@ -41,4 +41,16 @@ router.post('/v1/activate', handler(true));
 // Dastur ishga tushganda va vaqti-vaqti bilan (masalan har 6 soatda)
 router.post('/v1/check', handler(false));
 
+// Kalit kiritilgandan keyin CafePOS yuboradigan ro'yxatdan o'tish ma'lumotlari
+router.post('/v1/profile', async (req, res) => {
+  const b = req.body || {};
+  try {
+    await licenses.saveProfile({ key: b.key, deviceId: b.device_id, profile: b.profile, ip: req.ip });
+    res.json({ ok: true });
+  } catch (err) {
+    if (!(err instanceof licenses.LicenseError)) throw err;
+    res.status(err.status).json({ ok: false, code: err.code, message: err.message });
+  }
+});
+
 module.exports = router;

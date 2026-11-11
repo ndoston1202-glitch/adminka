@@ -28,6 +28,17 @@ Server manzili, masalan: `https://admin.cafepos.uz`
 ### `POST /api/v1/check`
 Body xuddi shunday. Farqi: bog'lanmagan kalitni bog'lamaydi.
 
+### `POST /api/v1/profile`
+Kalit kiritilgandan keyin CafePOS ro'yxatdan o'tish formasidagi ma'lumotlarni yuboradi.
+Faqat kalit bog'langan qurilmadan qabul qilinadi. `name` va `director_name` majburiy.
+```json
+{ "key": "CAFE-...", "device_id": "3f2a...", "profile": {
+    "name": "Rayhon Kafe", "company": "Rayhon MChJ", "district": "Chilonzor", "address": "Bunyodkor 1",
+    "telegram_phone": "+998901112233", "vat_percent": 12, "inn": "123456789", "contract_no": "SH-7",
+    "director_name": "Aziz Karimov", "director_phone": "+998901112233", "note": "" } }
+```
+Javob: `{ "ok": true }`. Ma'lumotlar adminkada kalit sahifasida ko'rinadi.
+
 ### Muvaffaqiyatli javob (200)
 ```json
 {

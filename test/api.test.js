@@ -125,6 +125,32 @@ test('oflayn muddat kalit muddatidan oshmaydi', async () => {
   assert.equal(r.body.license.offline_until, r.body.license.expires_at);
 });
 
+test("ro'yxatdan o'tish ma'lumotlari faqat bog'langan qurilmadan qabul qilinadi", async () => {
+  const { rows } = await db.query("INSERT INTO customers (name) VALUES ('Yangi mijoz') RETURNING id");
+  const lic = await licenses.createLicense({ customerId: rows[0].id, plan: 'monthly', months: 1 });
+  const profile = { name: ' Rayhon Kafe ', company: 'Rayhon MChJ', district: 'Chilonzor', address: 'Bunyodkor 1',
+    telegram_phone: '+998901112233', vat_percent: '12', inn: '123456789', contract_no: 'SH-7',
+    director_name: 'Aziz Karimov', director_phone: '+998901112233', note: 'izoh', hack: '<script>' };
+  const body = { key: lic.license_key, device_id: DEV_A, profile };
+
+  assert.equal((await api('/api/v1/profile', body)).body.code, 'device_mismatch'); // hali aktivlashtirilmagan
+  await api('/api/v1/activate', { key: lic.license_key, device_id: DEV_A });
+  assert.equal((await api('/api/v1/profile', { ...body, device_id: DEV_B })).status, 409);
+  assert.equal((await api('/api/v1/profile', { ...body, profile: { name: 'x' } })).status, 400); // direktor yo'q
+  assert.equal((await api('/api/v1/profile', { ...body, profile: { ...profile, vat_percent: 500 } })).status, 400);
+
+  const r = await api('/api/v1/profile', body);
+  assert.equal(r.status, 200);
+  const { rows: saved } = await db.query('SELECT profile, profile_at FROM licenses WHERE id = $1', [lic.id]);
+  assert.equal(saved[0].profile.name, 'Rayhon Kafe');
+  assert.equal(saved[0].profile.vat_percent, 12);
+  assert.equal(saved[0].profile.hack, undefined);
+  assert.ok(saved[0].profile_at);
+  // Admin bo'sh qoldirgan maydonlar to'ldiriladi, kiritgani esa o'zgarmaydi
+  const { rows: cust } = await db.query('SELECT name, cafe_name, phone, address FROM customers WHERE id = $1', [rows[0].id]);
+  assert.deepEqual(cust[0], { name: 'Yangi mijoz', cafe_name: 'Rayhon Kafe', phone: '+998901112233', address: 'Bunyodkor 1' });
+});
+
 test('admin panel: login, CSRF va mijoz qo\'shish', async () => {
   const bcrypt = require('bcryptjs');
   await db.query('INSERT INTO admins (username, password_hash) VALUES ($1, $2)', ['test', await bcrypt.hash('parol12345', 4)]);
@@ -164,6 +190,11 @@ test('admin panel: login, CSRF va mijoz qo\'shish', async () => {
   assert.equal(ext.res.status, 302);
   const licPage = await req(licPath);
   assert.ok(licPage.text.includes("To&#39;lov qabul qilindi"));
+  assert.ok(licPage.text.includes('hali CafePOS'));
+  await db.query("UPDATE licenses SET profile = $2, profile_at = now() WHERE id = $1",
+    [licPath.split('/').pop(), JSON.stringify({ name: 'Vali Kafe <i>', director_name: 'Vali', inn: '987654321' })]);
+  const withProfile = await req(licPath);
+  assert.ok(withProfile.text.includes('Vali Kafe &lt;i&gt;') && withProfile.text.includes('987654321'));
   // Parolni almashtirish
   const acc = await req('/account');
   assert.ok(acc.text.includes('Parolni almashtirish'));

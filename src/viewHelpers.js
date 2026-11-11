@@ -41,9 +41,17 @@ const PLANS = { monthly: 'Oylik', yearly: 'Yillik' };
 const EVENTS = {
   created: 'Yaratildi', extended: 'Uzaytirildi', activated: 'Aktivlashtirildi', rejected: 'Rad etildi',
   blocked: 'Bloklandi', unblocked: 'Blokdan chiqarildi', device_reset: 'Qurilma uzildi',
+  profile: "Ro'yxatdan o'tdi",
 };
 const REJECT = {
   blocked: 'bloklangan', not_activated: 'aktivlashtirilmagan', device_mismatch: 'boshqa qurilma',
 };
 
-module.exports = { date, dateTime, money, daysLeft, licenseState, PLANS, EVENTS, REJECT };
+// Kalit sahifasida ko'rsatiladigan ro'yxatdan o'tish maydonlari
+const PROFILE_LABELS = [
+  ['name', 'Filial nomi'], ['company', 'Kompaniya'], ['district', 'Tuman'], ['address', 'Manzil'],
+  ['telegram_phone', 'Telegram telefon'], ['vat_percent', 'QQS (%)'], ['inn', 'INN'], ['contract_no', 'Shartnoma raqami'],
+  ['director_name', 'Direktor'], ['director_phone', 'Direktor telefoni'], ['note', 'Izoh'],
+];
+
+module.exports = { PROFILE_LABELS, date, dateTime, money, daysLeft, licenseState, PLANS, EVENTS, REJECT };
