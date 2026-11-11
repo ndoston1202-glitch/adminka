@@ -10,7 +10,18 @@ CafePOS dasturining litsenziya kalitlarini boshqarish uchun admin panel va aktiv
 
 CafePOS tomonini ulash bo'yicha: [docs/CAFEPOS_INTEGRATION.md](docs/CAFEPOS_INTEGRATION.md)
 
-## O'rnatish
+## Netlify'da ishlashi
+
+Sayt: https://cafepos-adminka.netlify.app (Netlify Server + Netlify Database).
+
+- `netlify/server/index.mjs` kirish nuqtasi. `npm run build` ilovani `dist/app.cjs` fayliga yig'adi
+- `netlify/database/migrations/` dagi SQL fayllar har deploy'da avtomatik qo'llanadi.
+  Qo'llangan migratsiyani **o'zgartirmang**, yangi fayl qo'shing
+- Netlify'dagi muhit o'zgaruvchilari: `LICENSE_PRIVATE_KEY` (bir qatorli base64 yoki PEM), `SESSION_SECRET`,
+  `COOKIE_SECURE=true`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` (faqat birinchi adminni yaratish uchun)
+- Parol panel ichida, yuqori o'ng burchakdagi login nomi orqali almashtiriladi
+
+## Lokal o'rnatish
 
 Talablar: Node.js 20+, PostgreSQL 13+.
 
@@ -55,7 +66,10 @@ src/
   routes/api.js         CafePOS uchun API (/api/v1/activate, /api/v1/check)
   routes/admin.js       Admin panel
   views/                EJS sahifalar
-migrations/             SQL migratsiyalar
+  bootstrap.js          Birinchi adminni yaratish
+netlify/server/         Netlify Server kirish nuqtasi
+netlify/database/migrations/  SQL migratsiyalar
+public/static/          CSS va JS
 scripts/                migrate, create-admin, gen-keys
 docs/                   CafePOS integratsiyasi
 ```
