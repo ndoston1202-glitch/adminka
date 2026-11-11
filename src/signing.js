@@ -7,8 +7,11 @@ let publicKey;
 
 function loadKeys() {
   if (privateKey) return;
-  const privPem = config.privateKeyPem || fs.readFileSync(config.privateKeyPath, 'utf8');
-  privateKey = crypto.createPrivateKey(privPem);
+  const raw = (config.privateKeyPem || fs.readFileSync(config.privateKeyPath, 'utf8')).trim();
+  // PEM yoki bir qatorli base64 (PKCS8 DER) — muhit o'zgaruvchisida saqlash qulay bo'lishi uchun
+  privateKey = raw.startsWith('-----')
+    ? crypto.createPrivateKey(raw)
+    : crypto.createPrivateKey({ key: Buffer.from(raw, 'base64'), format: 'der', type: 'pkcs8' });
   publicKey = crypto.createPublicKey(privateKey);
 }
 
