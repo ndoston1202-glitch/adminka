@@ -1,0 +1,117 @@
+<%- include('partials/header', { title: "CafePOS'ni o'rnatish" }) %>
+<div class="install">
+  <div class="card install-hero">
+    <div>
+      <h1>CafePOS'ni kompyuterga o'rnatish</h1>
+      <p class="muted">Noldan boshlab 4 qadam. Windows 10 yoki 11 kerak. O'rnatish paytida internet bo'lishi shart.</p>
+    </div>
+    <div class="version">
+      <span class="muted small">Joriy versiya</span>
+      <% if (release) { %>
+        <b><%= release.version %></b>
+        <span class="muted small"><%= h.dateTime(release.date) %> da yangilangan</span>
+      <% } else { %>
+        <b>eng so'nggi</b>
+        <span class="muted small">versiya raqamini hozir olib bo'lmadi</span>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h2>Python'ni o'rnating <span class="badge danger">majburiy</span></h2>
+      <p>CafePOS Python dasturlash tilida yozilgan, shuning uchun kompyuterda Python bo'lishi kerak. U bepul va bir marta o'rnatiladi.</p>
+      <p><a class="btn primary" href="https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe">⬇️ Python 3.12 ni yuklab olish (Windows 64-bit)</a>
+         <a class="btn" href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">Boshqa versiyalar</a></p>
+      <ol>
+        <li>Yuklangan <code>python-3.12.10-amd64.exe</code> faylini oching.</li>
+        <li class="warn-line"><b>Eng muhimi:</b> oynaning pastidagi <b>"Add python.exe to PATH"</b> katagini belgilang. Belgilanmasa, CafePOS Python'ni topa olmaydi.</li>
+        <li><b>"Install Now"</b> ni bosing va tugashini kuting.</li>
+      </ol>
+      <p class="muted small">Rasmiy python.org saytidan yuklanadi. 3.8 yoki undan yangi istalgan versiya to'g'ri keladi.</p>
+    </div>
+  </div>
+
+  <div class="card step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h2>CafePOS'ni yuklab oling <span class="badge danger">majburiy</span></h2>
+      <p>Tugma doim dasturning eng so'nggi versiyasini beradi.</p>
+      <p><a class="btn primary" href="/ornatish/cafepos.zip">⬇️ CafePOS'ni yuklab olish (.zip)</a></p>
+      <ol>
+        <li>Yuklangan ZIP faylni sichqonchaning o'ng tugmasi bilan bosing → <b>"Извлечь все…" / "Extract All…"</b>.</li>
+        <li>Papkani doimiy joyga oching, masalan <code>C:\CafePOS</code>. Ichida <code><%= folderName %></code> papkasi paydo bo'ladi.</li>
+      </ol>
+      <p class="muted small">Dasturni "Загрузки" (Downloads) papkasida qoldirmang: u yerdagi fayllar tasodifan o'chirilishi mumkin. Barcha ma'lumotlar (menyu, sotuvlar) shu papka ichida saqlanadi.</p>
+    </div>
+  </div>
+
+  <div class="card step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h2>O'rnatishni ishga tushiring</h2>
+      <ol>
+        <li>Ochilgan papkadagi <code>ORNATISH.bat</code> faylini ikki marta bosing.</li>
+        <li>Windows "Bu dasturga o'zgartirish kiritishga ruxsat berasizmi?" deb so'rasa, <b>"Да / Yes"</b> ni bosing. Bu telefon va planshetlar kassaga ulana olishi uchun kerak.</li>
+        <li>Ish stolida <b>CafePOS</b> yorlig'i paydo bo'ladi.</li>
+      </ol>
+      <p class="muted small">"Python topilmadi" degan yozuv chiqsa, 1-qadamda "Add python.exe to PATH" belgilanmagan. Python'ni o'chirib, qaytadan o'rnating.</p>
+    </div>
+  </div>
+
+  <div class="card step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h2>Dasturni oching va aktivlashtiring</h2>
+      <ol>
+        <li>Ish stolidagi <b>CafePOS</b> yorlig'ini oching.</li>
+        <li>Sizga berilgan <b>litsenziya kalitini</b> kiriting (<code>CAFE-XXXX-XXXX-XXXX-XXXX</code>) va "Aktivlashtirish" ni bosing.</li>
+        <li><b>Ro'yxatdan o'tish</b> formasini to'ldiring: kafe nomi, direktor ma'lumotlari va 4 raqamli parol. Shu parol bilan dasturga kirasiz.</li>
+      </ol>
+      <p class="muted small">Kalitingiz bo'lmasa yoki muddati tugagan bo'lsa, sotuvchiga murojaat qiling. Kalit bitta kompyuterga bog'lanadi.</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h2>Qo'shimcha dasturlar</h2>
+      <dl class="extras">
+        <dt>Brauzer: Chrome yoki Edge <span class="badge success">odatda bor</span></dt>
+        <dd>CafePOS oynasi shu brauzer orqali ochiladi. Edge Windows'da tayyor turadi. Xohlasangiz:
+          <a href="https://www.google.com/chrome/" target="_blank" rel="noopener">Chrome'ni yuklab olish</a>.</dd>
+        <dt>Git <span class="badge warning">ixtiyoriy</span></dt>
+        <dd>Faqat <code>YANGILASH.bat</code> orqali bir tugma bilan yangilash uchun kerak (dastur <code>git clone</code> bilan o'rnatilgan bo'lsa).
+          ZIP orqali o'rnatganlarga kerak emas.
+          <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">Git'ni yuklab olish</a>.</dd>
+        <dt>Chek printeri drayveri <span class="badge warning">printer bo'lsa</span></dt>
+        <dd>58/80 mm termoprinter ishlatilsa, uning drayveri printer bilan kelgan diskdan yoki ishlab chiqaruvchi saytidan o'rnatiladi.</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h2>Yangi versiyaga o'tish</h2>
+      <ol>
+        <li>Dastur papkasidagi <code>TOXTATISH.bat</code> ni ishga tushiring.</li>
+        <li>Shu sahifadan CafePOS'ni qayta yuklab oling.</li>
+        <li>ZIP ichidagi fayllarni eski papka ustiga ko'chiring va "fayllarni almashtirish"ga rozi bo'ling.</li>
+        <li><code>ISHGA_TUSHIR.bat</code> bilan qayta oching.</li>
+      </ol>
+      <p class="muted small">Ma'lumotlaringiz (<code>cafepos.db</code>), kalitingiz (<code>license.json</code>) va rasmlar ZIP ichida yo'q, shuning uchun ular o'chmaydi. Ehtiyot uchun <code>cafepos.db</code> faylidan nusxa olib qo'ying.</p>
+    </div>
+  </div>
+
+  <% if (release) { %>
+  <div class="card">
+    <h2>So'nggi o'zgarishlar</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Sana</th><th>O'zgarish</th><th>Kod</th></tr></thead>
+      <tbody>
+      <% release.changes.forEach(c => { %>
+        <tr><td><%= h.dateTime(c.date) %></td><td class="wrap"><%= c.title %></td><td class="mono muted"><%= c.sha %></td></tr>
+      <% }) %>
+      </tbody>
+    </table></div>
+  </div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

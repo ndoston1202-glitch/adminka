@@ -151,6 +151,44 @@ test("ro'yxatdan o'tish ma'lumotlari faqat bog'langan qurilmadan qabul qilinadi"
   assert.deepEqual(cust[0], { name: 'Yangi mijoz', cafe_name: 'Rayhon Kafe', phone: '+998901112233', address: 'Bunyodkor 1' });
 });
 
+test("o'rnatish sahifasi: ochiq, versiya GitHub'dan olinadi", async () => {
+  const release = require('../src/release');
+  const commit = (sha, date, message) => ({ sha, commit: { committer: { date }, message } });
+  let calls = 0;
+  const fetchImpl = async (url) => {
+    calls++;
+    assert.ok(url.includes('/repos/ndoston1202-glitch/cafepos/commits?sha=litsenziya'));
+    return { ok: true, json: async () => [
+      commit('4eadee1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '2026-11-11T14:30:00Z', "Ro'yxatdan o'tish formasi\n\nbatafsil"),
+      commit('5160fe6bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '2026-11-11T14:10:00Z', '<b>Tuzatish</b>'),
+    ] };
+  };
+  release.resetCache();
+  let t = 1_000_000;
+  const rel = await release.getRelease({ fetchImpl, now: () => t });
+  assert.equal(rel.version, '2026.11.11-4eadee1');
+  assert.equal(rel.changes[0].title, "Ro'yxatdan o'tish formasi");
+  await release.getRelease({ fetchImpl, now: () => t + 60_000 });
+  assert.equal(calls, 1, 'kesh ishlashi kerak');
+  // GitHub ishlamasa: eski ma'lumot qoladi, sahifa buzilmaydi
+  t += 11 * 60_000;
+  const failing = async () => { throw new Error('tarmoq yo\'q'); };
+  assert.equal((await release.getRelease({ fetchImpl: failing, now: () => t })).version, '2026.11.11-4eadee1');
+
+  // Sahifa loginsiz ochiladi (kesh to'la - GitHub'ga murojaat qilinmaydi)
+  await release.getRelease({ fetchImpl, now: Date.now });
+  const res = await fetch(base + '/ornatish');
+  const html = await res.text();
+  assert.equal(res.status, 200);
+  assert.ok(html.includes('2026.11.11-4eadee1') && html.includes('python-3.12.10-amd64.exe'));
+  assert.ok(html.includes('&lt;b&gt;Tuzatish&lt;/b&gt;'), 'commit matni escape qilinishi kerak');
+  const zip = await fetch(base + '/ornatish/cafepos.zip', { redirect: 'manual' });
+  assert.equal(zip.status, 302);
+  assert.equal(zip.headers.get('location'), 'https://github.com/ndoston1202-glitch/cafepos/archive/refs/heads/litsenziya.zip');
+
+  release.resetCache();
+});
+
 test('admin panel: login, CSRF va mijoz qo\'shish', async () => {
   const bcrypt = require('bcryptjs');
   await db.query('INSERT INTO admins (username, password_hash) VALUES ($1, $2)', ['test', await bcrypt.hash('parol12345', 4)]);

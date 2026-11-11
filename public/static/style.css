@@ -70,3 +70,27 @@ tr:hover td { background: #fafbfc; }
 .login-box { max-width: 360px; margin: 80px auto; }
 .login-box h1 { font-size: 20px; text-align: center; margin-bottom: 20px; }
 .logout a { color: #cbd5e1; }
+.center { text-align: center; }
+.login-box .center { margin: 14px 0 0; }
+td.wrap { white-space: normal; }
+code { background: #eef0f4; padding: 1px 6px; border-radius: 4px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+.install { max-width: 920px; margin: 0 auto; }
+.install-hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+.install-hero h1 { font-size: 22px; margin-bottom: 6px; }
+.install-hero p { margin: 0; }
+.version { display: flex; flex-direction: column; align-items: flex-end; background: #f1f5ff; border: 1px solid #dbe4ff; border-radius: 10px; padding: 10px 16px; }
+.version b { font-size: 18px; font-family: ui-monospace, Consolas, monospace; color: var(--primary-d); }
+.step { display: flex; gap: 16px; }
+.step-num { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 700; font-size: 17px; display: grid; place-items: center; }
+.step-body { flex: 1; min-width: 0; }
+.step-body h2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.step-body p { margin: 8px 0; }
+.step-body ol, .install ol { margin: 8px 0; padding-left: 20px; }
+.install li { margin: 5px 0; }
+.warn-line { background: var(--warn-bg); border-radius: 6px; padding: 6px 10px; margin-left: -10px !important; }
+.step-body .btn { margin: 2px 6px 2px 0; }
+.extras { margin: 0; }
+.extras dt { font-weight: 600; margin-top: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.extras dt:first-child { margin-top: 0; }
+.extras dd { margin: 4px 0 0; color: #3b4354; }
+@media (max-width: 600px) { .step { flex-direction: column; gap: 8px; } .version { align-items: flex-start; } }

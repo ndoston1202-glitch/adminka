@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const db = require('../db');
 const licenses = require('../licenses');
+const release = require('../release');
 
 const router = express.Router();
 
@@ -27,6 +28,13 @@ router.use((req, res, next) => {
 
 const flash = (req, type, text) => { req.session.flash = { type, text }; };
 const back = (req, res, fallback) => res.redirect(req.get('Referer') || fallback);
+
+// --- O'rnatish sahifasi (ochiq: mijozlar ham ko'radi) ---
+router.get('/ornatish', async (req, res) => {
+  res.render('install', { release: await release.getRelease(), zipUrl: release.zipUrl, folderName: release.folderName });
+});
+// Doim eng so'nggi CafePOS (GitHub'dagi joriy versiya)
+router.get('/ornatish/cafepos.zip', (req, res) => res.redirect(302, release.zipUrl));
 
 // --- Login ---
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, skipSuccessfulRequests: true });

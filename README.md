@@ -19,6 +19,9 @@ Sayt: https://cafepos-adminka.netlify.app (Netlify Server + Netlify Database).
   Qo'llangan migratsiyani **o'zgartirmang**, yangi fayl qo'shing
 - Netlify'dagi muhit o'zgaruvchilari: `LICENSE_PRIVATE_KEY` (bir qatorli base64 yoki PEM), `SESSION_SECRET`,
   `COOKIE_SECURE=true`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` (faqat birinchi adminni yaratish uchun)
+- `/ornatish` — ochiq sahifa: CafePOS'ni noldan o'rnatish tartibi, kerakli dasturlar va yuklab olish tugmasi.
+  Versiya va "So'nggi o'zgarishlar" GitHub'dan olinadi (`CAFEPOS_REPO`, `CAFEPOS_BRANCH`; standart: `litsenziya` branchi),
+  shuning uchun CafePOS'ga o'zgarish yuklanishi bilan sahifa o'zi yangilanadi (10 daqiqagacha kesh)
 - Parol panel ichida, yuqori o'ng burchakdagi login nomi orqali almashtiriladi
 
 ## Lokal o'rnatish

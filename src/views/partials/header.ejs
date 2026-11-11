@@ -16,6 +16,7 @@
     <a href="/customers" class="<%= path.startsWith('/customers') ? 'on' : '' %>">Mijozlar</a>
     <a href="/licenses" class="<%= path.startsWith('/licenses') ? 'on' : '' %>">Kalitlar</a>
     <a href="/payments" class="<%= path.startsWith('/payments') ? 'on' : '' %>">To'lovlar</a>
+    <a href="/ornatish" class="<%= path.startsWith('/ornatish') ? 'on' : '' %>">⬇️ O'rnatish</a>
     <a href="/account" class="<%= path.startsWith('/account') ? 'on' : '' %>">🔑 Parol</a>
   </nav>
   <form method="post" action="/logout" class="logout">
@@ -23,6 +24,10 @@
     <span><%= admin.username %></span>
     <button class="btn ghost small">Chiqish</button>
   </form>
+</header>
+<% } else if (path.startsWith('/ornatish')) { %>
+<header class="topbar">
+  <a class="brand" href="/ornatish">☕ CafePOS <span>o'rnatish</span></a>
 </header>
 <% } %>
 <main class="container">
