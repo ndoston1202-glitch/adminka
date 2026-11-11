@@ -1,0 +1,10 @@
+<%- include('partials/header', { title: 'Yangi mijoz' }) %>
+<div class="card narrow">
+  <h2>Yangi mijoz</h2>
+  <% if (errors) { %><div class="flash error"><%= errors %></div><% } %>
+  <form method="post" action="/customers">
+    <%- include('partials/customer_fields', { customer }) %>
+    <button class="btn primary">Saqlash</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

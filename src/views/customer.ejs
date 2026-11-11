@@ -1,0 +1,45 @@
+<%- include('partials/header', { title: customer.cafe_name || customer.name }) %>
+<p><a href="/customers">← Mijozlar</a></p>
+<div class="two-col">
+  <div class="card">
+    <h2><%= customer.cafe_name || customer.name %></h2>
+    <form method="post" action="/customers/<%= customer.id %>">
+      <%- include('partials/customer_fields', { customer }) %>
+      <button class="btn">Saqlash</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Yangi kalit yaratish</h2>
+    <form method="post" action="/licenses">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input type="hidden" name="customer_id" value="<%= customer.id %>">
+      <label>Tarif
+        <select name="plan"><option value="monthly">Oylik</option><option value="yearly">Yillik</option></select>
+      </label>
+      <%- include('partials/plan_fields', { minMonths: 0, defMonths: 1 }) %>
+      <p class="muted small">0 oy — kalit yaratiladi, lekin to'lovgacha ishlamaydi.</p>
+      <button class="btn primary">Kalit yaratish</button>
+    </form>
+  </div>
+</div>
+<div class="card">
+  <h2>Kalitlar</h2>
+  <% if (!licenses.length) { %><p class="muted">Bu mijozda hali kalit yo'q.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Kalit</th><th>Tarif</th><th>Muddat</th><th>Holat</th><th>Qurilma</th><th>Oxirgi aloqa</th></tr></thead>
+    <tbody>
+    <% licenses.forEach(l => { %>
+      <tr>
+        <td class="mono"><a href="/licenses/<%= l.id %>"><%= l.license_key %></a></td>
+        <td><%= h.PLANS[l.plan] %></td>
+        <td><%= h.date(l.expires_at) %></td>
+        <td><%- include('partials/badge', { l }) %></td>
+        <td><%= l.device_name || (l.device_id ? l.device_id.slice(0, 12) + '…' : 'Bog\'lanmagan') %></td>
+        <td><%= h.dateTime(l.last_check_at) %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

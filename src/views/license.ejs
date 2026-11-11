@@ -1,0 +1,93 @@
+<%- include('partials/header', { title: license.license_key }) %>
+<p><a href="/customers/<%= license.customer_id %>">← <%= license.cafe_name || license.customer_name %></a></p>
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="key mono"><%= license.license_key %> <button class="btn small ghost" data-copy="<%= license.license_key %>">Nusxa olish</button></div>
+      <div class="muted"><%= license.cafe_name || license.customer_name %> · <%= license.phone || '' %></div>
+    </div>
+    <%- include('partials/badge', { l: license }) %>
+  </div>
+  <dl class="info">
+    <dt>Tarif</dt><dd><%= h.PLANS[license.plan] %></dd>
+    <dt>Amal qilish muddati</dt><dd><b><%= h.dateTime(license.expires_at) %></b></dd>
+    <dt>Qurilma</dt><dd><%= license.device_id ? (license.device_name || '—') : "Hali aktivlashtirilmagan" %><% if (license.device_id) { %> <span class="mono muted small"><%= license.device_id %></span><% } %></dd>
+    <dt>Aktivlashtirilgan</dt><dd><%= h.dateTime(license.activated_at) %></dd>
+    <dt>Oxirgi aloqa</dt><dd><%= h.dateTime(license.last_check_at) %> <span class="muted"><%= license.last_ip || '' %></span></dd>
+    <dt>Dastur versiyasi</dt><dd><%= license.app_version || '—' %></dd>
+  </dl>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <h2>💰 To'lov qabul qilish</h2>
+    <p class="muted small">Muddat <%= h.daysLeft(license.expires_at) > 0 ? 'joriy tugash sanasidan' : 'bugundan' %> boshlab uzaytiriladi. CafePOS keyingi tekshiruvda yangi muddatni avtomatik oladi.</p>
+    <form method="post" action="/licenses/<%= license.id %>/extend">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <%- include('partials/plan_fields', { minMonths: 1, defMonths: monthsForPlan[license.plan] }) %>
+      <label>Izoh<input name="note"></label>
+      <button class="btn primary">Muddatni uzaytirish</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Amallar</h2>
+    <div class="actions">
+      <% if (license.status === 'active') { %>
+      <form method="post" action="/licenses/<%= license.id %>/block" data-confirm="Kalitni bloklaysizmi? CafePOS keyingi tekshiruvda to'xtaydi.">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn danger">Bloklash</button>
+      </form>
+      <% } else { %>
+      <form method="post" action="/licenses/<%= license.id %>/unblock">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn">Blokdan chiqarish</button>
+      </form>
+      <% } %>
+      <% if (license.device_id) { %>
+      <form method="post" action="/licenses/<%= license.id %>/reset-device" data-confirm="Qurilmani uzasizmi? Kalitni boshqa kompyuterda aktivlashtirish mumkin bo'ladi.">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn">Qurilmani uzish</button>
+      </form>
+      <% } %>
+    </div>
+    <p class="muted small">"Qurilmani uzish" — mijoz kompyuterini almashtirganda ishlatiladi.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>To'lovlar tarixi</h2>
+  <% if (!payments.length) { %><p class="muted">To'lov yo'q.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sana</th><th>Summa</th><th>Oy</th><th>Usul</th><th>Eski muddat</th><th>Yangi muddat</th><th>Admin</th><th>Izoh</th></tr></thead>
+    <tbody>
+    <% payments.forEach(p => { %>
+      <tr><td><%= h.dateTime(p.created_at) %></td><td><%= h.money(p.amount) %></td><td><%= p.months %></td><td><%= p.method || '—' %></td>
+      <td><%= h.date(p.old_expires_at) %></td><td><%= h.date(p.new_expires_at) %></td><td><%= p.username || '—' %></td><td><%= p.note || '' %></td></tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+
+<div class="card">
+  <h2>Jurnal</h2>
+  <% if (!events.length) { %><p class="muted">Hodisa yo'q.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Vaqt</th><th>Hodisa</th><th>Tafsilot</th><th>IP</th></tr></thead>
+    <tbody>
+    <% events.forEach(e => { const d = e.details || {}; %>
+      <tr>
+        <td><%= h.dateTime(e.created_at) %></td>
+        <td><%= h.EVENTS[e.type] || e.type %></td>
+        <td class="small">
+          <% if (e.type === 'rejected') { %>Sabab: <%= h.REJECT[d.code] || d.code %><%= d.deviceName ? ' · ' + d.deviceName : '' %>
+          <% } else if (e.type === 'extended') { %>+<%= d.months %> oy · <%= h.date(d.from) %> → <%= h.date(d.to) %>
+          <% } else if (e.type === 'activated') { %><%= d.deviceName || d.deviceId %><%= d.appVersion ? ' · v' + d.appVersion : '' %>
+          <% } else if (e.type === 'device_reset') { %><%= d.device_name || d.device_id || '' %>
+          <% } else if (e.type === 'created') { %><%= h.PLANS[d.plan] %>, <%= d.months %> oy<% } %>
+        </td>
+        <td class="muted"><%= e.ip || '' %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

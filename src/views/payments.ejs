@@ -1,0 +1,21 @@
+<%- include('partials/header', { title: "To'lovlar" }) %>
+<div class="card">
+  <h2>To'lovlar</h2>
+  <% if (!payments.length) { %><p class="muted">Hali to'lov yo'q.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sana</th><th>Mijoz</th><th>Kalit</th><th>Summa</th><th>Oy</th><th>Usul</th><th>Yangi muddat</th><th>Admin</th></tr></thead>
+    <tbody>
+    <% payments.forEach(p => { %>
+      <tr>
+        <td><%= h.dateTime(p.created_at) %></td>
+        <td><%= p.cafe_name || p.customer_name %></td>
+        <td class="mono"><a href="/licenses/<%= p.license_id %>"><%= p.license_key %></a></td>
+        <td><%= h.money(p.amount) %></td><td><%= p.months %></td><td><%= p.method || '—' %></td>
+        <td><%= h.date(p.new_expires_at) %></td><td><%= p.username || '—' %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

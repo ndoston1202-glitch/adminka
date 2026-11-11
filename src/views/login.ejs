@@ -1,0 +1,12 @@
+<%- include('partials/header', { title: 'Kirish' }) %>
+<div class="login-box card">
+  <h1>☕ CafePOS Adminka</h1>
+  <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="/login">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Login<input name="username" required autofocus autocomplete="username"></label>
+    <label>Parol<input name="password" type="password" required autocomplete="current-password"></label>
+    <button class="btn primary wide">Kirish</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

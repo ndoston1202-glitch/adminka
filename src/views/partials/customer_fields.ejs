@@ -1,0 +1,8 @@
+<input type="hidden" name="_csrf" value="<%= csrf %>">
+<div class="grid2">
+  <label>Ism familiya *<input name="name" value="<%= customer.name || '' %>" required></label>
+  <label>Kafe nomi<input name="cafe_name" value="<%= customer.cafe_name || '' %>"></label>
+  <label>Telefon<input name="phone" value="<%= customer.phone || '' %>" placeholder="+998 90 123 45 67"></label>
+  <label>Manzil<input name="address" value="<%= customer.address || '' %>"></label>
+</div>
+<label>Izoh<textarea name="note" rows="2"><%= customer.note || '' %></textarea></label>

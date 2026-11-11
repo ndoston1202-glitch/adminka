@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title + ' — ' : '' %>CafePOS Adminka</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<% if (admin) { %>
+<header class="topbar">
+  <a class="brand" href="/">☕ CafePOS <span>Adminka</span></a>
+  <nav>
+    <a href="/" class="<%= path === '/' ? 'on' : '' %>">Bosh sahifa</a>
+    <a href="/customers" class="<%= path.startsWith('/customers') ? 'on' : '' %>">Mijozlar</a>
+    <a href="/licenses" class="<%= path.startsWith('/licenses') ? 'on' : '' %>">Kalitlar</a>
+    <a href="/payments" class="<%= path.startsWith('/payments') ? 'on' : '' %>">To'lovlar</a>
+  </nav>
+  <form method="post" action="/logout" class="logout">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <span><%= admin.username %></span>
+    <button class="btn ghost small">Chiqish</button>
+  </form>
+</header>
+<% } %>
+<main class="container">
+<% if (flash) { %><div class="flash <%= flash.type %>"><%= flash.text %></div><% } %>

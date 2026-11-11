@@ -1,0 +1,33 @@
+<%- include('partials/header', { title: 'Kalitlar' }) %>
+<div class="card">
+  <div class="card-head">
+    <h2>Kalitlar</h2>
+    <form class="search" method="get">
+      <input type="hidden" name="filter" value="<%= filter %>">
+      <input name="q" value="<%= q %>" placeholder="Kalit yoki mijoz..."><button class="btn">Qidirish</button>
+    </form>
+  </div>
+  <div class="tabs">
+    <% [['all','Barchasi'],['active','Faol'],['expiring','Tugayapti'],['expired','Tugagan'],['blocked','Bloklangan'],['unused','Aktivlashmagan']].forEach(([k, t]) => { %>
+      <a class="<%= filter === k ? 'on' : '' %>" href="?filter=<%= k %>&q=<%= encodeURIComponent(q) %>"><%= t %></a>
+    <% }) %>
+  </div>
+  <% if (!licenses.length) { %><p class="muted">Kalit topilmadi.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Kalit</th><th>Mijoz</th><th>Tarif</th><th>Muddat</th><th>Holat</th><th>Oxirgi aloqa</th></tr></thead>
+    <tbody>
+    <% licenses.forEach(l => { %>
+      <tr>
+        <td class="mono"><a href="/licenses/<%= l.id %>"><%= l.license_key %></a></td>
+        <td><a href="/customers/<%= l.customer_id %>"><%= l.cafe_name || l.customer_name %></a></td>
+        <td><%= h.PLANS[l.plan] %></td>
+        <td><%= h.date(l.expires_at) %></td>
+        <td><%- include('partials/badge', { l }) %></td>
+        <td><%= h.dateTime(l.last_check_at) %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

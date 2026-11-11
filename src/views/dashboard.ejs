@@ -1,0 +1,51 @@
+<%- include('partials/header', { title: 'Bosh sahifa' }) %>
+<div class="stats">
+  <a class="stat" href="/customers"><b><%= stats.customers %></b><span>Mijozlar</span></a>
+  <a class="stat ok" href="/licenses?filter=active"><b><%= stats.active %></b><span>Faol kalitlar</span></a>
+  <a class="stat warn" href="/licenses?filter=expiring"><b><%= stats.expiring %></b><span>7 kunda tugaydi</span></a>
+  <a class="stat bad" href="/licenses?filter=expired"><b><%= stats.expired %></b><span>Muddati tugagan</span></a>
+  <a class="stat" href="/licenses?filter=blocked"><b><%= stats.blocked %></b><span>Bloklangan</span></a>
+  <a class="stat" href="/payments"><b><%= h.money(stats.month_revenue) %></b><span>Shu oy tushum</span></a>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>Muddati tugayotgan / tugagan</h2><a class="btn primary" href="/customers/new">+ Yangi mijoz</a></div>
+  <% if (!expiring.length) { %><p class="muted">Hammasi joyida — yaqin kunlarda tugaydigan kalit yo'q.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Mijoz</th><th>Telefon</th><th>Kalit</th><th>Muddat</th><th>Holat</th><th></th></tr></thead>
+    <tbody>
+    <% expiring.forEach(l => { %>
+      <tr>
+        <td><a href="/customers/<%= l.customer_id %>"><%= l.cafe_name || l.customer_name %></a></td>
+        <td><%= l.phone || '—' %></td>
+        <td class="mono"><%= l.license_key %></td>
+        <td><%= h.date(l.expires_at) %></td>
+        <td><%- include('partials/badge', { l }) %></td>
+        <td><a class="btn small" href="/licenses/<%= l.id %>">To'lov qabul qilish</a></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>Oxirgi to'lovlar</h2><a href="/payments">Barchasi →</a></div>
+  <% if (!payments.length) { %><p class="muted">Hali to'lov yo'q.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sana</th><th>Mijoz</th><th>Summa</th><th>Oy</th><th>Yangi muddat</th></tr></thead>
+    <tbody>
+    <% payments.forEach(p => { %>
+      <tr>
+        <td><%= h.dateTime(p.created_at) %></td>
+        <td><a href="/licenses/<%= p.license_id %>"><%= p.cafe_name || p.customer_name %></a></td>
+        <td><%= h.money(p.amount) %></td>
+        <td><%= p.months %></td>
+        <td><%= h.date(p.new_expires_at) %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table></div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>
