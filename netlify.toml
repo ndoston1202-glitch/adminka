@@ -1,0 +1,9 @@
+[build]
+  command = "echo 'build kerak emas'"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[server]
+  region = "fra"

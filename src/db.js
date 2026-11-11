@@ -1,7 +1,18 @@
 const { Pool } = require('pg');
 const config = require('./config');
 
-const pool = new Pool({ connectionString: config.databaseUrl });
+function connectionString() {
+  if (config.databaseUrl) return config.databaseUrl;
+  try {
+    return require('@netlify/database').getConnectionString();
+  } catch {
+    return 'postgres://cafepos:cafepos@localhost:5432/adminka';
+  }
+}
+
+// Netlify Server 60 soniya jim turgan ulanishlarni uzadi, shuning uchun idle < 60s
+const pool = new Pool({ connectionString: connectionString(), idleTimeoutMillis: 30_000, max: 10 });
+pool.on('error', (err) => console.error('PG pool xatosi:', err.message));
 
 async function withTransaction(fn) {
   const client = await pool.connect();

@@ -69,3 +69,4 @@ tr:hover td { background: #fafbfc; }
 .tabs a:hover { text-decoration: none; }
 .login-box { max-width: 360px; margin: 80px auto; }
 .login-box h1 { font-size: 20px; text-align: center; margin-bottom: 20px; }
+.logout a { color: #cbd5e1; }

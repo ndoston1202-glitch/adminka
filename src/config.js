@@ -10,7 +10,8 @@ function int(name, def) {
 
 module.exports = {
   port: int('PORT', 3000),
-  databaseUrl: process.env.DATABASE_URL || 'postgres://cafepos:cafepos@localhost:5432/adminka',
+  // Lokal: DATABASE_URL. Netlify'da bo'sh qoldiriladi — Netlify Database avtomatik ulanadi
+  databaseUrl: process.env.DATABASE_URL || null,
   sessionSecret: process.env.SESSION_SECRET || 'dev-secret-change-me',
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   privateKeyPath: process.env.LICENSE_PRIVATE_KEY_PATH || './keys/license_private.pem',
@@ -18,5 +19,9 @@ module.exports = {
   privateKeyPem: process.env.LICENSE_PRIVATE_KEY || null,
   publicKeyPem: process.env.LICENSE_PUBLIC_KEY || null,
   offlineGraceDays: int('OFFLINE_GRACE_DAYS', 7),
-  isProduction: process.env.NODE_ENV === 'production',
+  isProduction: process.env.NODE_ENV === 'production' || !!process.env.NETLIFY,
+  timeZone: process.env.APP_TIMEZONE || 'Asia/Tashkent',
+  // Birinchi ishga tushishda admin bo'lmasa, shu login/parol bilan yaratiladi
+  bootstrapAdmin: process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD
+    ? { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD } : null,
 };

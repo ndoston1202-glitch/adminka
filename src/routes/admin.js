@@ -189,6 +189,25 @@ router.post('/licenses/:id/unblock', (req, res) => action(req, res,
 router.post('/licenses/:id/reset-device', (req, res) => action(req, res,
   () => licenses.resetDevice(req.params.id, req.session.admin.id), "Qurilma uzildi. Kalitni yangi kompyuterda aktivlashtirish mumkin"));
 
+// --- Parolni almashtirish ---
+router.get('/account', (req, res) => res.render('account'));
+
+router.post('/account/password', async (req, res) => {
+  const { current, password, password2 } = req.body;
+  const { rows } = await db.query('SELECT * FROM admins WHERE id = $1', [req.session.admin.id]);
+  if (!rows.length || !(await bcrypt.compare(String(current || ''), rows[0].password_hash))) {
+    flash(req, 'error', "Joriy parol noto'g'ri");
+  } else if (typeof password !== 'string' || password.length < 8) {
+    flash(req, 'error', "Yangi parol kamida 8 belgidan iborat bo'lishi kerak");
+  } else if (password !== password2) {
+    flash(req, 'error', 'Yangi parollar bir xil emas');
+  } else {
+    await db.query('UPDATE admins SET password_hash = $2 WHERE id = $1', [rows[0].id, await bcrypt.hash(password, 12)]);
+    flash(req, 'success', 'Parol almashtirildi');
+  }
+  res.redirect('/account');
+});
+
 // --- To'lovlar ---
 router.get('/payments', async (req, res) => {
   const { rows } = await db.query(`

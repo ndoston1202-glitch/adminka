@@ -1,0 +1,12 @@
+<%- include('partials/header', { title: 'Hisob' }) %>
+<div class="card narrow">
+  <h2>Parolni almashtirish</h2>
+  <form method="post" action="/account/password">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Joriy parol<input name="current" type="password" required autocomplete="current-password"></label>
+    <label>Yangi parol (kamida 8 belgi)<input name="password" type="password" minlength="8" required autocomplete="new-password"></label>
+    <label>Yangi parolni takrorlang<input name="password2" type="password" minlength="8" required autocomplete="new-password"></label>
+    <button class="btn primary">Saqlash</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

@@ -19,7 +19,7 @@
   </nav>
   <form method="post" action="/logout" class="logout">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
-    <span><%= admin.username %></span>
+    <a href="/account"><%= admin.username %></a>
     <button class="btn ghost small">Chiqish</button>
   </form>
 </header>

@@ -1,15 +1,23 @@
-const pad = (n) => String(n).padStart(2, '0');
+const { timeZone } = require('./config');
+
+// Server qaysi zonada bo'lishidan qat'i nazar, sanalar Toshkent vaqtida ko'rsatiladi
+const fmt = new Intl.DateTimeFormat('en-GB', {
+  timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+});
+function parts(d) {
+  return Object.fromEntries(fmt.formatToParts(new Date(d)).map((p) => [p.type, p.value]));
+}
 
 function date(d) {
   if (!d) return '—';
-  const x = new Date(d);
-  return `${pad(x.getDate())}.${pad(x.getMonth() + 1)}.${x.getFullYear()}`;
+  const p = parts(d);
+  return `${p.day}.${p.month}.${p.year}`;
 }
 
 function dateTime(d) {
   if (!d) return '—';
-  const x = new Date(d);
-  return `${date(x)} ${pad(x.getHours())}:${pad(x.getMinutes())}`;
+  const p = parts(d);
+  return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`;
 }
 
 function money(n) {
